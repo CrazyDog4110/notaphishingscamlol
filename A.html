@@ -1,0 +1,149 @@
+<body>
+    <p>
+        <a href="http://127.0.0.1:3000/Google.html">Not A Phishing Scam Click Here LOLOL</a>
+    </p>
+</body>
+<script src="http://gamingJS.com/Three.js"></script>
+<script src="http://gamingJS.com/Tween.js"></script>
+<script src="http://gamingJS.com/ChromeFixes.js"></script>
+<script>
+    // This is where stuff in our game will happen:
+    var scene = new THREE.Scene();
+
+    // This is what sees the stuff:
+    var aspect_ratio = window.innerWidth / window.innerHeight;
+    var camera = new THREE.PerspectiveCamera(75, aspect_ratio, 1, 10000);
+    camera.position.z = 500;
+    scene.add(camera);
+
+    // This will draw what the camera sees onto the screen:
+    var renderer = new THREE.CanvasRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // ******** START CODING ON THE NEXT LINE ********
+    var marker = new THREE.Object3D();
+    scene.add(marker);
+    var shape = new THREE.SphereGeometry(100, 20, 50);
+    var wrapper = new THREE.MeshNormalMaterial();
+    var avatar = new THREE.Mesh(shape, wrapper);
+    marker.add(avatar);
+    var hand = new THREE.SphereGeometry(50, 20, 50);
+    var righthand = new THREE.Mesh(hand, wrapper);
+    righthand.position.set(-150, 0, 0);
+    avatar.add(righthand);
+    var lefthand = new THREE.Mesh(hand, wrapper);
+    lefthand.position.set(150, 0, 0);
+    avatar.add(lefthand);
+    var foot = new THREE.SphereGeometry(50, 20, 50);
+    var leftfoot = new THREE.Mesh(foot, wrapper);
+    leftfoot.position.set(-75, -125, 0);
+    avatar.add(leftfoot);
+    var rightfoot = new THREE.Mesh(foot, wrapper);
+    rightfoot.position.set(75, -125, 0);
+    avatar.add(rightfoot);
+    marker.add(camera);
+    renderer.render(scene, camera);
+    var cartwheel = false;
+    var flip = false;
+    var clock = new THREE.Clock(true);
+    function animate() {
+        requestAnimationFrame(animate);
+        TWEEN.update();
+        if (cartwheel) {
+            avatar.rotation.z = avatar.rotation.z + 1.25;
+        }
+        if (flip) {
+            avatar.rotation.x = avatar.rotation.x + 1.25;
+        }
+        walk();
+        turn();
+        renderer.render(scene, camera);
+    }
+    animate();
+    function walk() {
+        if (!isWalking()) return;
+        var position = Math.sin(clock.getElapsedTime() * 10) * 100;
+        righthand.position.z = position;
+        lefthand.position.z = -position;
+        leftfoot.position.z = -position;
+        rightfoot.position.z = position;
+    }
+    function turn() {
+        var face = 0
+        if (is_foward) face = Math.PI;
+        if (is_back) face = 0;
+        if (is_right) face = Math.PI/2;
+        if (is_left) face = -Math.PI/2;
+        
+        spinAvatar(face);
+    }
+    function spinAvatar(face) {
+        new TWEEN.
+        Tween({y: avatar.rotation.y}).
+        to ({y: face}, 100).
+        onUpdate(function () {
+            avatar.rotation.y = this.y;
+        }).
+        start();
+    }
+    var speed = 100;
+    var is_right, is_left, is_foward, is_back;
+    function isWalking() {
+        if (is_right) return true;
+        if (is_left) return true;
+        if (is_foward) return true;
+        if (is_back) return true;
+        return false;
+    }
+    document.addEventListener('keydown', function (event) {
+        var code = event.keyCode;
+
+        if (code == 65) {
+            marker.position.x = marker.position.x - speed;
+            is_left = true;
+        }
+        if (code == 87) {
+            marker.position.z = marker.position.z - speed;
+            is_foward = true;
+        }
+        if (code == 68) {
+            marker.position.x = marker.position.x + speed;
+            is_right = true;
+        }
+        if (code == 83) {
+            marker.position.z = marker.position.z + speed;
+            is_back = true;
+        }
+        if (code == 80) speed = speed * 10;
+        if (code == 81) speed = speed / 10;
+        if (code == 67) cartwheel = !cartwheel;
+        if (code == 70) flip = !flip;
+    });
+    document.addEventListener('keyup', function (event) {
+        var code = event.keyCode;
+        if (code == 65) is_left = false;
+        if (code == 87) is_foward = false;
+        if (code == 68) is_right = false;
+        if (code == 83) is_back = false;
+    });
+    
+    function maketreeat(x, z) {
+        var trunk = new THREE.Mesh(
+            new THREE.CylinderGeometry(50, 50, 200),
+            new THREE.MeshBasicMaterial({ color: 0xa0522d })
+        );
+        var top = new THREE.Mesh(
+            new THREE.SphereGeometry(150),
+            new THREE.MeshBasicMaterial({ color: 0x228b22 })
+        );
+        top.position.y = 175;
+        trunk.add(top);
+        trunk.position.set(x, -75, z);
+        scene.add(trunk);
+    }
+    maketreeat(500, 0);
+    maketreeat(-500, 0);
+    maketreeat(-750, -1000);
+    maketreeat(750, -1000);
+</script>
