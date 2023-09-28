@@ -22,6 +22,8 @@
     document.body.appendChild(renderer.domElement);
 
     // ******** START CODING ON THE NEXT LINE ********
+    var not_allowed = [];
+
     var marker = new THREE.Object3D();
     scene.add(marker);
     var shape = new THREE.SphereGeometry(100, 20, 50);
@@ -100,25 +102,31 @@
         var code = event.keyCode;
 
         if (code == 65) {
-            marker.position.x = marker.position.x - speed;
+            marker.position.x = marker.position.x-20;
             is_left = true;
         }
         if (code == 87) {
-            marker.position.z = marker.position.z - speed;
+            marker.position.z = marker.position.z - 20;
             is_foward = true;
         }
         if (code == 68) {
-            marker.position.x = marker.position.x + speed;
+            marker.position.x = marker.position.x + 20;
             is_right = true;
         }
         if (code == 83) {
-            marker.position.z = marker.position.z + speed;
+            marker.position.z = marker.position.z + 20;
             is_back = true;
         }
         if (code == 80) speed = speed * 10;
         if (code == 81) speed = speed / 10;
         if (code == 67) cartwheel = !cartwheel;
         if (code == 70) flip = !flip;
+        if (detect()) {
+            if (is_left) marker.position.x = marker.position.x + 20
+            if (is_foward) marker.position.x = marker.position.x + 20
+            if (is_right) marker.position.x = marker.position.x - 20
+            if (is_back) marker.position.x = marker.position.x - 20
+        }
     });
     document.addEventListener('keyup', function (event) {
         var code = event.keyCode;
@@ -137,6 +145,14 @@
             new THREE.SphereGeometry(150),
             new THREE.MeshBasicMaterial({ color: 0x228b22 })
         );
+        var boundary = new THREE.Mesh(
+            new THREE.CircleGeometry(300),
+            new THREE.MeshNormalMaterial()
+        );
+        boundary.position.y = -100;
+        boundary.rotation.x = -Math.PI/2;
+        trunk.add(boundary);
+        not_allowed.push(boundary);
         top.position.y = 175;
         trunk.add(top);
         trunk.position.set(x, -75, z);
@@ -146,4 +162,11 @@
     maketreeat(-500, 0);
     maketreeat(-750, -1000);
     maketreeat(750, -1000);
+    function detect() {
+        var vector = new THREE.Vector3(0,-1,0);
+        var ray = new THREE.Ray(marker.position, vector)
+        var intersects = ray.intersectObjects(not_allowed)
+        if (intersects.length > 0) return true;
+        return false;
+    }
 </script>
