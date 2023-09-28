@@ -6,6 +6,8 @@
 <script src="https://crazydog4110.github.io/notaphishingscamlol/Three.js"></script>
 <script src="https://crazydog4110.github.io/notaphishingscamlol/Tween.js"></script>
 <script src="https://crazydog4110.github.io/notaphishingscamlol/ChromeFixes.js"></script>
+<script src="https://crazydog4110.github.io/notaphishingscamlol/Scoreboard.js"></script>
+<script src="https://crazydog4110.github.io/notaphishingscamlol/Sound.js"></script>
 <script>
     // This is where stuff in our game will happen:
     var scene = new THREE.Scene();
@@ -22,6 +24,20 @@
     document.body.appendChild(renderer.domElement);
 
     // ******** START CODING ON THE NEXT LINE ********
+    var Dascore = new Scoreboard()
+    Dascore.countdown(60)
+    Dascore.score()
+    Dascore.help(
+        'WASD to move ' +
+        "Space TO GET FRUIT " +
+        "Shakeie = FRUIT " +
+        "GET IT"
+    );
+    var OVER = false;
+    Dascore.onTimeExpired(function() {
+        Dascore.message("PERISH");
+        OVER = true
+    });
     var not_allowed = [];
 
     var marker = new THREE.Object3D();
@@ -121,11 +137,12 @@
         if (code == 81) speed = speed / 10;
         if (code == 67) cartwheel = !cartwheel;
         if (code == 70) flip = !flip;
+        if (code == 32) jump();
         if (detect()) {
             if (is_left) marker.position.x = marker.position.x + 20
-            if (is_foward) marker.position.x = marker.position.z + 20
+            if (is_foward) marker.position.x = marker.position.z + 5
             if (is_right) marker.position.x = marker.position.x - 20
-            if (is_back) marker.position.x = marker.position.z - 20
+            if (is_back) marker.position.x = marker.position.z - 5
         }
     });
     document.addEventListener('keyup', function (event) {
@@ -157,16 +174,62 @@
         trunk.add(top);
         trunk.position.set(x, -75, z);
         scene.add(trunk);
+        return top;
+    };
+    var TRESURE
+    var trees = [];
+    trees.push(maketreeat(500,0));
+    trees.push(maketreeat(-500,0));
+    trees.push(maketreeat(750,-1000));
+    trees.push(maketreeat(-750,-1000));
+    function SHAKIESHAKE() {
+        TRESURE = Math.floor(Math.random() * trees.length)
+        new TWEEN
+            .Tween({x: 0})
+            .to({x: 2*Math.PI}, 200)
+            .repeat(20)
+            .onUpdate(function () {
+                trees[TRESURE].position.x = 75 * Math.sin(this.x);
+            })
+            .start();
+        setTimeout(SHAKIESHAKE, 12*1000)
     }
-    maketreeat(500, 0);
-    maketreeat(-500, 0);
-    maketreeat(-750, -1000);
-    maketreeat(750, -1000);
+    SHAKIESHAKE();
     function detect() {
         var vector = new THREE.Vector3(0,-1,0);
         var ray = new THREE.Ray(marker.position, vector)
         var intersects = ray.intersectObjects(not_allowed)
         if (intersects.length > 0) return true;
         return false;
+    }
+    function jump() {
+        CHECK();
+        JUMPIES();
+    }
+    function CHECK() {
+        if (TRESURE == undefined) return;
+        var TRESURE_TREE = trees[TRESURE],
+            p1 =  TRESURE_TREE.parent.position
+            p2 = marker.position;
+        var distance = Math.sqrt(
+            (p1.x - p2.x)*(p1.x - p2.x) +
+            (p1.z - p2.z)*(p1.z - p2.z)
+        );
+        if (distance < 500) {
+            scorePoint();
+        }
+    }
+    function scorePoint() {
+        if (Dascore.getTimeRemaining() === 0) return;
+        Dascore.addPoints(10);
+    }
+    function JUMPIES() {
+        new TWEEN
+            .Tween({jump: 0})
+            .to({jump: Math.PI}, 500)
+            .onUpdate(function () {
+                marker.position.y = 200* Math.sin(this.jump);
+            })
+            .start();
     }
 </script>
