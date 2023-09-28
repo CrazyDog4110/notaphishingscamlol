@@ -123,9 +123,9 @@
         if (code == 70) flip = !flip;
         if (detect()) {
             if (is_left) marker.position.x = marker.position.x + 20
-            if (is_foward) marker.position.x = marker.position.x + 20
+            if (is_foward) marker.position.x = marker.position.z + 20
             if (is_right) marker.position.x = marker.position.x - 20
-            if (is_back) marker.position.x = marker.position.x - 20
+            if (is_back) marker.position.x = marker.position.z - 20
         }
     });
     document.addEventListener('keyup', function (event) {
